@@ -7,3 +7,8 @@ Then go into your folder
 ```
 cd my-project
 ```
+# Step-2
+
+```
+npm init -y
+```
