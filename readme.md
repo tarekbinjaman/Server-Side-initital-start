@@ -18,7 +18,7 @@ install pacakges
 npm install dotenv express jsonwebtoken cors mongodb cookie-parser
 ```
 
-# Initially your code will lokes like this:
+# Initially your code will look like this:
 ```
 require('dotenv').config();
 const express = require('express');
