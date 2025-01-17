@@ -12,3 +12,8 @@ cd my-project
 ```
 npm init -y
 ```
+# Step-3
+install pacakges
+```
+npm install dotenv express jsonwebtoken cors mongodb cookie-parser
+```
