@@ -77,3 +77,16 @@ async function run() {
 run().catch(console.dir);
 
 ```
+
+# Step-5
+Then put your username and passwordin uri
+
+* Step-6 
+create a database collection and start crud operation
+```
+    const jobCollectoin = client.db('JobList').collection('jobsForjwt')
+```
+don't forget to comment await client.close otherwise you will not able to get data from database or face error
+```
+    // await client.close();
+```
