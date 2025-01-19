@@ -9,6 +9,9 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 
 
 // middlewares
+app.use(express.json());
+app.use(cors({origin: ['http://localhost:5173',], credentials: true}));
+app.use(cookieParser());
 
 
 const uri = "mongodb+srv://user-infinity:saQLWNYrOCJGBGPY@cluster0.vkwnn.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -27,6 +30,29 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const jobCollectoin = client.db('JobList').collection('jobsForjwt')
+    // jwt
+    app.post('/jwt', async(req, res) => {
+      const user = req.body;
+      const token = jwt.sign({email: user.email}, process.env.JWT_SECRET, {expiresIn: '1h'});
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: false,
+      })
+      .send({success: true});
+    });
+
+    // jwt logout funciton
+    app.post('/logout', (req, res) => {
+      res
+      .clearCookie('token', {
+        httpOnly: true,
+        secure: false,
+        path: '/',
+      })
+      .send({ success: true })
+    })
+
+
     app.get('/services', async(req, res) => {
         const cursor = jobCollectoin.find();
         const result = await cursor.toArray();
@@ -43,9 +69,6 @@ async function run() {
 run().catch(console.dir);
 
 
-app.use(express.json());
-app.use(cors({origin: ['http://localhost:5173',], credentials: true}));
-app.use(cookieParser());
 
 app.get('/', (req, res) => {
     res.send('Jwt final practice is going on Database is running')

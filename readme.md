@@ -90,3 +90,54 @@ don't forget to comment await client.close otherwise you will not able to get da
 ```
     // await client.close();
 ```
+
+# From here we will start JWT process
+
+In the very begining we have already start the process of jwt which we have start with cors setting up origin and credentials like this
+
+```
+app.use(express.json());
+app.use(cors({origin: ['http://localhost:5173',], credentials: true}));
+app.use(cookieParser());
+```
+
+# Now we will start with token generation process
+
+# Step-1
+# Generate secret using node 
+first start just typing node
+```
+node
+```
+then write this code
+```
+require('crypto').randomBytes(64).toString('hex')
+```
+# set token in cookie
+
+```
+    app.post('/jwt', async(req, res) => {
+      const user = req.body;
+      const token = jwt.sign({email: user.email}, process.env.JWT_SECRET, {expiresIn: '1h'});
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: false,
+      })
+      .send({success: true});
+    });
+
+```
+
+# remove token from cookie
+
+```
+    app.post('/logout', (req, res) => {
+      res
+      .clearCookie('token', {
+        httpOnly: true,
+        secure: false,
+        path: '/',
+      })
+      .send({ success: true })
+    })
+```
