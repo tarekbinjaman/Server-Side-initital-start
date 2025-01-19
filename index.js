@@ -13,6 +13,26 @@ app.use(express.json());
 app.use(cors({origin: ['http://localhost:5173',], credentials: true}));
 app.use(cookieParser());
 
+const verifyToken = (req, res, next) => {
+  const token = req?.cookies?.token; //check if token exists in cookies
+
+  if(!token) {
+    return res.status(401).send({message: 'Unauthorized access - No Token'});
+  }
+  jwt.verify(token, process.env.JWT_SECRET, (err, decode) => {
+    if(err) {
+      const errorMessage = err.name === 'TokenExpiredError' 
+      ?
+      'Token expired'
+      :
+      'Invalid token';
+      return res.status(401).send({message: errorMessage}) ;
+    }
+    req.user = decode; // save decode payload to `req.user`
+    next();
+  })
+}
+
 
 const uri = "mongodb+srv://user-infinity:saQLWNYrOCJGBGPY@cluster0.vkwnn.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
@@ -53,7 +73,7 @@ async function run() {
     })
 
 
-    app.get('/services', async(req, res) => {
+    app.get('/services', verifyToken, async(req, res) => {
         const cursor = jobCollectoin.find();
         const result = await cursor.toArray();
         res.send(result)

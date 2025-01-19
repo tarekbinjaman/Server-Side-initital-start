@@ -141,3 +141,36 @@ require('crypto').randomBytes(64).toString('hex')
       .send({ success: true })
     })
 ```
+
+# Verify token process
+```
+const verifyToken = (req, res, next) => {
+  const token = req?.cookies?.token; //check if token exists in cookies
+
+  if(!token) {
+    return res.status(401).send({message: 'Unauthorized access - No Token'});
+  }
+  jwt.verify(token, process.env.JWT_SECRET, (err, decode) => {
+    if(err) {
+      const errorMessage = err.name === 'TokenExpiredError' 
+      ?
+      'Token expired'
+      :
+      'Invalid token';
+      return res.status(401).send({message: errorMessage}) ;
+    }
+    req.user = decode; // save decode payload to `req.user`
+    next();
+  })
+}
+```
+
+then put verifyToken where you want to secure your route
+here is a sample:
+```
+    app.get('/services', verifyToken, async(req, res) => {
+        const cursor = jobCollectoin.find();
+        const result = await cursor.toArray();
+        res.send(result)
+    })
+```
